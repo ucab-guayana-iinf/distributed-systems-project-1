@@ -10,6 +10,14 @@
 • Consola local – Con interfaz a usuario
 • Consola remota – Con interfaz a usuario
 
+## Configuración
+
+TODO: documentar software requerido para correr el proyecto
+
+## Comandos
+
+• Correr la aplicación principal `go install proyecto1` `go run src/main.go`
+
 ## Integrantes 
 
 • Juan Vera
