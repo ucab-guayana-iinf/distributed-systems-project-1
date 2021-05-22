@@ -14,8 +14,6 @@ type SafeCounter struct {
 }
 
 func (c *SafeCounter) Get() int {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	return c.V
 }
 
