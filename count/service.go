@@ -3,58 +3,53 @@ package count
 import (
 	"log"
 
+	"sync"
+
 	"proyecto1.com/main/utils"
 )
 
-// Private
-
-var count_value = 0
-var blocked = false
-
-func block() {
-	blocked = true
+type SafeCounter struct {
+	mu sync.Mutex
+	V int
 }
 
-func unblock() {
-	blocked = false
+func (c *SafeCounter) Get() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.V
 }
 
-func waitAvailability() {
-	// do nothing if count blocked 
-	// i.e: count is being accessed
-	for (blocked == true) {} 
+func (c *SafeCounter) Restart(n int) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var before = c.V
+	c.V = 0
+	log.Printf("[Counter] Before: %v. Restarted to 0", before)
+	return c.Get()
 }
 
-func get() int {
-	return count_value
+func (c *SafeCounter) Increment(n int) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var before = c.V
+	c.V += n
+	var after = c.V
+	log.Printf("[Counter] Before: %v. After: %v. Incremented by: %v", before, after, n)
+	return c.Get()
 }
 
-// Public
-
-func Restart() int {
-	defer unblock()
-	waitAvailability()
-	block()
-	count_value = 0
-	return get()
+func (c *SafeCounter) Decrement(n int) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var before = c.V
+	c.V -= n
+	var after = c.V
+	log.Printf("[Counter] Before: %v. After: %v. Decremented by: %v", before, after, n)
+	return c.Get()
 }
 
-func Increment(n int) int {
-	defer unblock()
-	waitAvailability()
-	block()
-	count_value += n
-	return get()
+func (c *SafeCounter) Print() {
+	log.Printf("[Counter] Count: %v", utils.IntToString(c.Get()))
 }
 
-func Decrement(n int) int {
-	defer unblock()
-	waitAvailability()
-	block()
-	count_value -= n
-	return get()
-}
-
-func Print() {
-	log.Printf("La cuenta es %v", utils.IntToString(get()))
-}
+var SharedCounter = SafeCounter{V: 0}
