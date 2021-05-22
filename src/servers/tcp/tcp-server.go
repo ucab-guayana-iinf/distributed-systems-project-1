@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"proyecto1.com/main/count"
-	"proyecto1.com/main/utils"
+	"proyecto1.com/main/src/count"
+	"proyecto1.com/main/src/utils"
 )
 
 func handleGetCount(w http.ResponseWriter, req *http.Request) {

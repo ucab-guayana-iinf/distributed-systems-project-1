@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	httpServer "proyecto1.com/main/http"
+	httpServer "proyecto1.com/main/src/servers/tcp"
+	udpServer "proyecto1.com/main/src/servers/udp"
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
@@ -15,7 +16,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 	case 1:
 		httpServer.Start()
 	case 2:
-		// TODO: start udp server
+		udpServer.Start()
 	case 3:
 		// TODO: add rpc server
 	}

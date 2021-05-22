@@ -5,7 +5,7 @@ import (
 
 	"sync"
 
-	"proyecto1.com/main/utils"
+	"proyecto1.com/main/src/utils"
 )
 
 type SafeCounter struct {
