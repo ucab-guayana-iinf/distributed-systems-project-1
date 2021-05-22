@@ -1,16 +1,19 @@
 package main
 
 import (
-	"log"
-
-	"proyecto1.com/main/utils"
+	"proyecto1.com/main/count"
 )
 
 func main() {
-	log.Printf("Main")
-	utils.StartProcess()
-}
+	count.Print()
+	
+	count.Increment(1)
+	count.Increment(1)
+	count.Increment(1)
+	
+	count.Print()
 
-// TODO:
-// Start tcp & udp processes
-// Print info on how to use the rest of processes local/remote interfacespackage main
+	count.Decrement(2)
+	
+	count.Print()
+}

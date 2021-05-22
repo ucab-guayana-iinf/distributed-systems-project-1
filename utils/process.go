@@ -3,6 +3,7 @@ package utils
 import (
 	"log"
 	"os/exec"
+	"strconv"
 )
 
 func StartProcess() {
@@ -18,3 +19,6 @@ func StartProcess() {
 	log.Printf("Command finished with error: %v", err)
 }
 
+func IntToString(n int) string {
+	return strconv.Itoa(n)
+}
