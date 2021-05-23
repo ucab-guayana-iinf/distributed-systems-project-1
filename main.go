@@ -28,6 +28,12 @@ func main() {
 	fmt.Println("[Main]: Started")
 	var wg sync.WaitGroup
 
+	// TODO: cli que permita?
+	// - Imprimir status de los servicios
+	// - Conectarse al CLI local
+	// - Conectarse al CLI remoto 
+	// - Matar todo
+
 	for i := 1; i <= 2; i++ {
 		fmt.Println("[Main]: Starting worker", i)
 		wg.Add(1)
