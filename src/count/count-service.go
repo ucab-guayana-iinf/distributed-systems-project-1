@@ -17,7 +17,7 @@ func (c *SafeCounter) Get() int {
 	return c.V
 }
 
-func (c *SafeCounter) Restart(n int) int {
+func (c *SafeCounter) Restart() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	var before = c.V
@@ -50,4 +50,6 @@ func (c *SafeCounter) Print() {
 	log.Printf("[Counter] Count: %v", utils.IntToString(c.Get()))
 }
 
+// TODO: inicializar con el valor que esté en BD
+// Si queremos ser exquisitos y sacar 20
 var SharedCounter = SafeCounter{V: 0}

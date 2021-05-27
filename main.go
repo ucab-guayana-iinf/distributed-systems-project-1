@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	httpServer "proyecto1.com/main/src/servers/tcp"
 	udpServer "proyecto1.com/main/src/servers/udp"
 )
 
@@ -14,7 +13,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 
 	switch id {
 	case 1:
-		httpServer.Start()
+		// TODO: add tcp server
 	case 2:
 		udpServer.Start()
 	case 3:
@@ -39,6 +38,9 @@ func main() {
 		wg.Add(1)
 		go start_server(&wg, i)
 	}
+
+	// TODO: menu que muestre opciones
+	// para acceder a las consolas
 
 	wg.Wait()
 }

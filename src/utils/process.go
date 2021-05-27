@@ -6,6 +6,10 @@ import (
 	"strconv"
 )
 
+// TODO: use to validate count min/max
+const MaxInt = int(MaxUint >> 1) 
+const MinInt = -MaxInt - 1
+
 func StartProcess() {
 	log.Printf("Haha business")
 
