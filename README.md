@@ -44,4 +44,4 @@ TODO: documentar software requerido para correr el proyecto
 - Juan Vera  CI 27375479
 - Angel Rodríguez CI 27015036
 - Brenda Ramos CI 27308627
-- Miguel Valdez No es persona natural
+- Miguel Valdez CI 26562643
