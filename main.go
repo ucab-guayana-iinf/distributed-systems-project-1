@@ -30,7 +30,7 @@ func main() {
 	// TODO: cli que permita?
 	// - Imprimir status de los servicios
 	// - Conectarse al CLI local
-	// - Conectarse al CLI remoto 
+	// - Conectarse al CLI remoto
 	// - Matar todo
 
 	for i := 1; i <= 2; i++ {
@@ -43,4 +43,5 @@ func main() {
 	// para acceder a las consolas
 
 	wg.Wait()
+	// utils.CreateProcessTest()
 }
