@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	tcpServer "proyecto1.com/main/src/servers/tcp"
 	udpServer "proyecto1.com/main/src/servers/udp"
 )
 
@@ -13,7 +14,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 
 	switch id {
 	case 1:
-		// TODO: add tcp server
+		tcpServer.Start()
 	case 2:
 		udpServer.Start()
 	case 3:
@@ -43,5 +44,4 @@ func main() {
 	// para acceder a las consolas
 
 	wg.Wait()
-	// utils.CreateProcessTest()
 }

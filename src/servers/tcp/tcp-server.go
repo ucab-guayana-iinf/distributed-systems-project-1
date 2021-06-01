@@ -1,5 +1,5 @@
-// package httpServer
-package main
+// package main
+package tcpServer
 
 import (
 	"bufio"
@@ -13,7 +13,8 @@ import (
 var count = 0
 
 func handleConnection(c net.Conn) {
-	fmt.Print("Client connected")
+	defer c.Close()
+	fmt.Println("[TCP Server]: Client connected with IP", c.RemoteAddr().String())
 	for {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
@@ -22,19 +23,24 @@ func handleConnection(c net.Conn) {
 			return
 		}
 
+		// If STOP received, close connection
 		temp := strings.TrimSpace(string(netData))
 		if temp == "STOP" {
+			fmt.Println("[TCP Server]: Client disconnected")
+			count--
 			break
 		}
 
-		fmt.Println(temp)
+		fmt.Println("[TCP Server]: Client said", temp)
+
+		// Send client count to client
 		counter := strconv.Itoa(count) + "\n"
-		c.Write([]byte(string(counter)))
+		message := "Qlq mano, clientes conectados:" + counter
+		c.Write([]byte(string(message)))
 	}
-	c.Close()
 }
 
-func main() {
+func Start() {
 	const PORT = ":2020"
 	fmt.Println("[TCP Server]: Starting")
 
@@ -45,6 +51,7 @@ func main() {
 		return
 	}
 	defer l.Close()
+	fmt.Println("[TCP Server]: Running in http://localhost" + PORT)
 
 	// Accept client connections
 	for {
@@ -58,45 +65,3 @@ func main() {
 		count++
 	}
 }
-
-// func main() {
-// 	const PORT = ":2020"
-// 	fmt.Println("[TCP Server]: Starting")
-
-// 	// Make the TCP server
-// 	listener, err := net.Listen("tcp", PORT)
-// 	if err != nil {
-// 		fmt.Println("Error creando el servidor TCP", err)
-// 		return
-// 	}
-// 	defer listener.Close()
-
-// 	// Accepts incoming client connections
-// 	c, err := listener.Accept()
-// 	if err != nil {
-// 		fmt.Println("Error aceptando la conexion del cliente:", err)
-// 		return
-// 	}
-
-// 	// Interaction with clients
-// 	for {
-// 		// Get messages from clients
-// 		netData, err := bufio.NewReader(c).ReadString('\n')
-// 		if err != nil {
-// 			fmt.Println("Error leyendo el input de la conexion:", err)
-// 			return
-// 		}
-
-// 		if strings.TrimSpace(string(netData)) == "STOP" {
-// 			fmt.Println("Exiting TCP server!")
-// 			return
-// 		}
-
-// 		fmt.Print("Client: ", string(netData))
-
-// 		// Send current time to clients
-// 		t := time.Now()
-// 		myTime := "Epale mano, son las " + t.Format(time.RFC3339) + "\n"
-// 		c.Write([]byte(myTime))
-// 	}
-// }

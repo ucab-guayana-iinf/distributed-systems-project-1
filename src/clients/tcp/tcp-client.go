@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// To stop connection, send STOP message to server
 func main() {
 	address := "localhost:2020"
 	fmt.Println("[TCP Client]: Starting")
