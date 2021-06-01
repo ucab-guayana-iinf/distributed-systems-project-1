@@ -11,9 +11,14 @@ import (
 	"time"
 )
 
-// TODO: use to validate count min/max
-// const MaxInt = int(MaxUint >> 1)
-// const MinInt = -MaxInt - 1
+type OperationsStruct struct {
+	GET int
+	INCREMENT int
+	DECREMENT int
+	RESTART int
+}
+
+var OPERATIONS = OperationsStruct{1, 2, 3, 4}
 
 func StartProcess() {
 	log.Printf("Haha business")
@@ -78,3 +83,4 @@ func CreateProcessTest() {
 	time.Sleep(time.Second * 20)
 	proc.Process.Kill()
 }
+

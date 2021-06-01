@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	tcpServer "proyecto1.com/main/src/servers/tcp"
+	rpcServer "proyecto1.com/main/src/servers/rpc"
 	udpServer "proyecto1.com/main/src/servers/udp"
 )
 
@@ -18,7 +19,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 	case 2:
 		udpServer.Start()
 	case 3:
-		// TODO: add rpc server
+		rpcServer.Start()
 	}
 
 	fmt.Printf("[Worker %v]: Finished\n", id)
@@ -34,14 +35,11 @@ func main() {
 	// - Conectarse al CLI remoto
 	// - Matar todo
 
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 3; i++ {
 		fmt.Println("[Main]: Starting worker", i)
 		wg.Add(1)
 		go start_server(&wg, i)
 	}
-
-	// TODO: menu que muestre opciones
-	// para acceder a las consolas
 
 	wg.Wait()
 }
