@@ -2,60 +2,48 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+	"unsafe"
 
-	"github.com/spf13/cobra"
+	"github.com/AlecAivazis/survey/v2"
+	"proyecto1.com/main/src/count"
 )
 
-
 func main() {
-	var echoTimes int
+	var result string
+	var valor string
+	var s int
+	var err error
 
-	// TODO:
-	// reemplazar con comandos CRUD de la cuenta
-  // usar https://github.com/manifoldco/promptui en vez de cobra?
+	for strings.Compare(result, "Salir") != 0 {
+		prompt := &survey.Select{
+			Message: "Que desea realizar:",
+			Options: []string{"Aumentar Cuenta", "Reducir Cuenta", "Salir"},
+		}
+		survey.AskOne(prompt, &result, survey.WithIcons(func(icons *survey.IconSet) {
+			icons.Question.Text = "🤡"
+		}))
 
-  var cmdPrint = &cobra.Command{
-    Use:   "print [string to print]",
-    Short: "Print anything to the screen",
-    Long: `print is for printing anything back to the screen.
-For many years people have printed back to the screen.`,
-    Args: cobra.MinimumNArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-      fmt.Println("Print: " + strings.Join(args, " "))
-    },
-  }
+		for s == 0 && strings.Compare(result, "Salir") != 0 {
 
-  var cmdEcho = &cobra.Command{
-    Use:   "echo [string to echo]",
-    Short: "Echo anything to the screen",
-    Long: `echo is for echoing anything back.
-Echo works a lot like print, except it has a child command.`,
-    Args: cobra.MinimumNArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-      fmt.Println("Echo: " + strings.Join(args, " "))
-    },
-  }
+			prompt := &survey.Input{
+				Message: "Ingrese un valor",
+			}
+			survey.AskOne(prompt, &valor, survey.WithIcons(func(icons *survey.IconSet) {
+				icons.Question.Text = "🤡"
+			}))
+			s, err = strconv.Atoi(valor)
 
-  var cmdTimes = &cobra.Command{
-    Use:   "times [string to echo]",
-    Short: "Echo anything to the screen more times",
-    Long: `echo things multiple times back to the user by providing
-a count and a string.`,
-    Args: cobra.MinimumNArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-      for i := 0; i < echoTimes; i++ {
-        fmt.Println("Echo: " + strings.Join(args, " "))
-      }
-    },
-  }
+			if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Aumentar Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
+				count.SharedCounter.Increment(s, "a")
+			} else if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Reducir Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
+				count.SharedCounter.Decrement(s, "a")
+			} else {
+				fmt.Println("Numero invalido")
+			}
 
-  cmdTimes.Flags().IntVarP(&echoTimes, "times", "t", 1, "times to echo the input")
-
-  var rootCmd = &cobra.Command{Use: "app"}
-  rootCmd.AddCommand(cmdPrint, cmdEcho)
-  cmdEcho.AddCommand(cmdTimes)
-  rootCmd.Execute()
-
-
+		}
+		s = 0
+	}
 }
