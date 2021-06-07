@@ -8,6 +8,8 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"proyecto1.com/main/src/count"
+	rpcClient "proyecto1.com/main/src/clients/rpc"
+	utils "proyecto1.com/main/src/utils"
 )
 
 func main() {
@@ -36,9 +38,11 @@ func main() {
 			s, err = strconv.Atoi(valor)
 
 			if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Aumentar Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				count.SharedCounter.Increment(s, "a")
+				rpcClient.Invoke(utils.OPERATIONS.INCREMENT, s)
+				// si lees esto me debes un beso
+				// count.SharedCounter.Increment(s, "Cliente local")
 			} else if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Reducir Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				count.SharedCounter.Decrement(s, "a")
+				count.SharedCounter.Decrement(s, "Cliente local")
 			} else {
 				fmt.Println("Numero invalido")
 			}
