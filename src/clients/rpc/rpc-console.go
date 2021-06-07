@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unsafe"
 
-	//Aqui ps
+	//Aqui pss
 	rpcClient "proyecto1.com/main/src/clients/rpc"
 
 	"github.com/AlecAivazis/survey/v2"
