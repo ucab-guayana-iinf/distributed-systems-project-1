@@ -1,17 +1,41 @@
-package rpcConsole
+package main
 
 import (
+	"log"
+	"net/rpc"
 	"strconv"
 	"strings"
 	"unsafe"
-
-	//Aqui pss
-	rpcClient "proyecto1.com/main/src/clients/rpc"
 
 	"github.com/AlecAivazis/survey/v2"
 	"proyecto1.com/main/src/count"
 	"proyecto1.com/main/src/utils"
 )
+
+func InvokeRpcCall(operation int, input int) int {
+	var err error
+
+	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	if err != nil {
+		log.Fatal("Connection error: ", err)
+	}
+
+	var reply int
+
+	switch operation {
+	case utils.OPERATIONS.GET:
+		client.Call("Task.GetCount", 1, &reply)
+	case utils.OPERATIONS.INCREMENT:
+		client.Call("Task.IncrementCount", input, &reply)
+	case utils.OPERATIONS.DECREMENT:
+		client.Call("Task.DecrementCount", input, &reply)
+	case utils.OPERATIONS.RESTART:
+		client.Call("Task.RestartCount", 1, &reply)
+	}
+
+	return reply
+}
+
 
 func main() {
 	var result string
@@ -39,11 +63,11 @@ func main() {
 			s, err = strconv.Atoi(valor)
 
 			if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Aumentar Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				rpcClient.Invoke(utils.OPERATIONS.INCREMENT, s)
+				InvokeRpcCall(utils.OPERATIONS.INCREMENT, s)
 			} else if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Reducir Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
 				count.SharedCounter.Decrement(s, "Local")
 			} else {
-				rpcClient.Invoke(utils.OPERATIONS.DECREMENT, s)
+				InvokeRpcCall(utils.OPERATIONS.DECREMENT, s)
 			}
 
 		}
