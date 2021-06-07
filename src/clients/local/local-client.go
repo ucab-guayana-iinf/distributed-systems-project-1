@@ -36,11 +36,11 @@ func main() {
 			s, err = strconv.Atoi(valor)
 
 			if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Aumentar Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				count.SharedCounter.Increment(s, "a")
+				count.SharedCounter.Increment(s, "Local")
 			} else if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Reducir Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				count.SharedCounter.Decrement(s, "a")
+				count.SharedCounter.Decrement(s, "Local")
 			} else {
-				fmt.Println("Numero invalido")
+				fmt.Println("Numero invalido 🤡")
 			}
 
 		}
