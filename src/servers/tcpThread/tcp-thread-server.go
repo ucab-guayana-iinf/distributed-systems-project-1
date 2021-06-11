@@ -1,5 +1,5 @@
-// package main
-package tcpServer
+// package tcpThreadServer
+package main
 
 import (
 	"bufio"
@@ -7,10 +7,12 @@ import (
 	"net"
 	"strconv"
 	"strings"
+
+	"proyecto1.com/main/src/count"
 )
 
 // Connected clients
-var count = 0
+var clientCount = 0
 
 func handleConnection(c net.Conn) {
 	defer c.Close()
@@ -19,28 +21,36 @@ func handleConnection(c net.Conn) {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
 		if err != nil {
-			fmt.Println("Error leyendo el input de la conexion:", err)
+			fmt.Println("[TCP Server]: Error leyendo el input de la conexion:", err)
 			return
 		}
 
-		// If STOP received, close connection
+		// Parse client message
 		temp := strings.TrimSpace(string(netData))
-		if temp == "STOP" {
+
+		// Exit condition
+		if strings.ToUpper(temp) == "STOP" {
 			fmt.Println("[TCP Server]: Client disconnected")
-			count--
+			clientCount--
 			break
 		}
 
 		fmt.Println("[TCP Server]: Client said", temp)
+		if temp == "increment" {
+			count.SharedCounter.Increment(1, "TCP Thread Server")
+		} else if temp == "decrement" {
+			count.SharedCounter.Decrement(1, "TCP Thread Server")
+		}
 
-		// Send client count to client
-		counter := strconv.Itoa(count) + "\n"
-		message := "Qlq mano, clientes conectados:" + counter
+		// Respond to client with clientCount
+		counter := strconv.Itoa(clientCount) + "\n"
+		message := "Qlq mano, clientes conectados: " + counter
 		c.Write([]byte(string(message)))
 	}
 }
 
-func Start() {
+// func Start() {
+func main() {
 	const PORT = ":2020"
 	fmt.Println("[TCP Server]: Starting")
 
@@ -60,8 +70,8 @@ func Start() {
 			fmt.Println("Error aceptando la conexion del cliente:", err)
 			return
 		}
-		// Serve each client with 1 goroutine
+		// Serve each client with a goroutine
 		go handleConnection(c)
-		count++
+		clientCount++
 	}
 }

@@ -32,7 +32,9 @@ func main() {
 		// Read messages from the server
 		message, _ := bufio.NewReader(c).ReadString('\n')
 		fmt.Print("Server: " + message)
-		if strings.TrimSpace(string(text)) == "STOP" {
+
+		// Check for exit signal
+		if strings.ToUpper(strings.TrimSpace(string(text))) == "STOP" {
 			fmt.Println("TCP client exiting...")
 			return
 		}

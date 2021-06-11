@@ -12,10 +12,10 @@ import (
 )
 
 type OperationsStruct struct {
-	GET int
+	GET       int
 	INCREMENT int
 	DECREMENT int
-	RESTART int
+	RESTART   int
 }
 
 var OPERATIONS = OperationsStruct{1, 2, 3, 4}
@@ -75,7 +75,8 @@ func CreateProcessTest() {
 	}
 
 	// Write to the process' console and execute a command
-	_, err = io.WriteString(stdin, "ping google.com\n")
+	// _, err = io.WriteString(stdin, "ping google.com\n")
+	_, err = io.WriteString(stdin, "go run main.go\n")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -83,4 +84,3 @@ func CreateProcessTest() {
 	time.Sleep(time.Second * 20)
 	proc.Process.Kill()
 }
-
