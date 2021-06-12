@@ -1,5 +1,5 @@
 // package tcpThreadServer
-package main
+package tcpThread
 
 import (
 	"bufio"
@@ -16,12 +16,12 @@ var clientCount = 0
 
 func handleConnection(c net.Conn) {
 	defer c.Close()
-	fmt.Println("[TCP Server]: Client connected with IP", c.RemoteAddr().String())
+	fmt.Println("[TCP Thread Server]: Client connected with IP", c.RemoteAddr().String())
 	for {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
 		if err != nil {
-			fmt.Println("[TCP Server]: Error leyendo el input de la conexion:", err)
+			fmt.Println("[TCP Thread Server]: Error leyendo el input de la conexion:", err)
 			return
 		}
 
@@ -30,14 +30,15 @@ func handleConnection(c net.Conn) {
 
 		// Exit condition
 		if strings.ToUpper(temp) == "STOP" {
-			fmt.Println("[TCP Server]: Client disconnected")
+			fmt.Println("[TCP Thread Server]: Client disconnected")
 			clientCount--
 			break
 		}
 
-		fmt.Println("[TCP Server]: Client said", temp)
+		fmt.Println("[TCP Thread Server]: Client said", temp)
 		if temp == "increment" {
-			count.SharedCounter.Increment(1, "TCP Thread Server")
+			count.Produce("Increment", "TCP Thread Server", 1)
+			// count.SharedCounter.Increment(1, "TCP Thread Server")
 		} else if temp == "decrement" {
 			count.SharedCounter.Decrement(1, "TCP Thread Server")
 		}
@@ -50,18 +51,18 @@ func handleConnection(c net.Conn) {
 }
 
 // func Start() {
-func main() {
+func Start() {
 	const PORT = ":2020"
-	fmt.Println("[TCP Server]: Starting")
+	fmt.Println("[TCP Thread Server]: Starting")
 
-	// Make the TCP server listener
+	// Make the TCP Thread server listener
 	l, err := net.Listen("tcp4", PORT)
 	if err != nil {
 		fmt.Println("Error creando el servidor TCP", err)
 		return
 	}
 	defer l.Close()
-	fmt.Println("[TCP Server]: Running in http://localhost" + PORT)
+	fmt.Println("[TCP Thread Server]: Running in http://localhost" + PORT)
 
 	// Accept client connections
 	for {

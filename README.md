@@ -33,8 +33,8 @@ TODO: documentar software requerido para correr el proyecto
 
 - Instalar dependencias
   1. `go get -u github.com/manifoldco/promptui`
-  2. `go get -u gorm.io/gorm`
-  3. `go get -u gorm.io/driver/sqlite`
+  2. `go get github.com/adjust/rmq/v3`
+
 - Correr la aplicación principal 
   - `go install proyecto1`
   - `go run src/main.go`

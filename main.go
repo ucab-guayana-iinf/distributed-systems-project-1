@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"sync"
 
+	countService "proyecto1.com/main/src/count"
 	rpcServer "proyecto1.com/main/src/servers/rpc"
+	tcpThread "proyecto1.com/main/src/servers/tcpThread"
 	udpServer "proyecto1.com/main/src/servers/udp"
 )
 
@@ -14,11 +16,13 @@ func start_server(wg *sync.WaitGroup, id int) {
 
 	switch id {
 	case 1:
-		// tcpServer.Start()
+		tcpThread.Start()
 	case 2:
 		udpServer.Start()
 	case 3:
 		rpcServer.Start()
+	case 4:
+		countService.ProcessMessages()
 	}
 
 	fmt.Printf("[Worker %v]: Finished\n", id)
@@ -34,7 +38,7 @@ func main() {
 	// - Conectarse al CLI remoto
 	// - Matar todo
 
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 4; i++ {
 		fmt.Println("[Main]: Starting worker", i)
 		wg.Add(1)
 		go start_server(&wg, i)

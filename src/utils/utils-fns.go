@@ -37,6 +37,14 @@ func IntToString(n int) string {
 	return strconv.Itoa(n)
 }
 
+func StringToInt(s string) int {
+	res, err := strconv.Atoi(s)
+	if err != nil {
+		panic(err)
+	}
+	return res
+}
+
 func CreateProcessTest() {
 	var cmd string
 
