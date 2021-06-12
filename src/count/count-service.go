@@ -53,13 +53,7 @@ func (c *SafeCounter) Print() {
 	log.Printf("[Counter] Count: %v", utils.IntToString(c.Get()))
 }
 
-// TODO: inicializar con el valor que esté en BD
-// Si queremos ser exquisitos y sacar 20
 var SharedCounter = SafeCounter{V: 0}
-
-// TODO:
-// add to message queue.
-// read from message queue & process operation
 
 const (
 	prefetchLimit = 1000
