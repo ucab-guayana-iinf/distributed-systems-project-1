@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.2.12 // indirect
-	github.com/adjust/rmq/v3 v3.0.0 // indirect
+	github.com/adjust/rmq/v3 v3.0.0
 	github.com/go-redis/redis/v8 v8.10.0 // indirect
 	github.com/jcelliott/lumber v0.0.0-20160324203708-dd349441af25 // indirect
 	github.com/lunixbochs/vtclean v1.0.0 // indirect

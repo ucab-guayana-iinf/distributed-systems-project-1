@@ -8,10 +8,10 @@ import (
 	"net/rpc"
 
 	"proyecto1.com/main/src/count"
-	// count "proyecto1.com/main/src/count/count-service"
 )
 
 type Task int
+
 var source = "RPC Server"
 
 func (t *Task) IncrementCount(n int, reply *int) error {

@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"sync"
 
 	countService "proyecto1.com/main/src/count"
 	rpcServer "proyecto1.com/main/src/servers/rpc"
+	tcpProcess "proyecto1.com/main/src/servers/tcpProcess"
 	tcpThread "proyecto1.com/main/src/servers/tcpThread"
 	udpServer "proyecto1.com/main/src/servers/udp"
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
-	fmt.Printf("[Worker %v]: Started\n", id)
+	// fmt.Printf("[Worker %v]: Started\n", id)
 	defer wg.Done()
 
 	switch id {
@@ -22,6 +24,12 @@ func start_server(wg *sync.WaitGroup, id int) {
 	case 3:
 		rpcServer.Start()
 	case 4:
+		if runtime.GOOS == "windows" {
+			fmt.Println("Saltando el TCP con procesos en windows")
+		} else {
+			tcpProcess.Start()
+		}
+	case 5:
 		countService.ProcessMessages()
 	}
 
