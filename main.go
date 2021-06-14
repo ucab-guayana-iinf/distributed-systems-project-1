@@ -15,7 +15,6 @@ import (
 func start_server(wg *sync.WaitGroup, id int) {
 	// fmt.Printf("[Worker %v]: Started\n", id)
 	defer wg.Done()
-	countService.InitializeCountService()
 
 	switch id {
 	case 1:
@@ -41,6 +40,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 func main() {
 	fmt.Println("[Main]: Started")
 	var wg sync.WaitGroup
+	countService.InitializeCountService()
 
 	// TODO: menu lindo para todo
 
