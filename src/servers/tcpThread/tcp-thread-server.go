@@ -38,7 +38,6 @@ func handleConnection(c net.Conn) {
 		arr := strings.Split(temp, " ")
 		action := arr[0]
 
-		fmt.Println(tag, "Client said", temp)
 		if action == "Increment" || action == "Decrement" {
 			num := utils.StringToInt(arr[1])
 			count.Produce(action, "TCP Thread Server", num)

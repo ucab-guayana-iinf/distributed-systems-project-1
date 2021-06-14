@@ -9,18 +9,20 @@ import (
 	rpcServer "proyecto1.com/main/src/servers/rpc"
 	tcpProcess "proyecto1.com/main/src/servers/tcpProcess"
 	tcpThread "proyecto1.com/main/src/servers/tcpThread"
-	udpServer "proyecto1.com/main/src/servers/udp"
+	// udpServer "proyecto1.com/main/src/servers/udp"
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
 	// fmt.Printf("[Worker %v]: Started\n", id)
 	defer wg.Done()
+	countService.InitializeCountService()
 
 	switch id {
 	case 1:
 		tcpThread.Start()
 	case 2:
-		udpServer.Start()
+		// apurate miguel
+		// udpServer.Start()
 	case 3:
 		rpcServer.Start()
 	case 4:
@@ -40,13 +42,9 @@ func main() {
 	fmt.Println("[Main]: Started")
 	var wg sync.WaitGroup
 
-	// TODO: cli que permita?
-	// - Imprimir status de los servicios
-	// - Conectarse al CLI local
-	// - Conectarse al CLI remoto
-	// - Matar todo
+	// TODO: menu lindo para todo
 
-	for i := 1; i <= 4; i++ {
+	for i := 1; i <= 5; i++ {
 		fmt.Println("[Main]: Starting worker", i)
 		wg.Add(1)
 		go start_server(&wg, i)

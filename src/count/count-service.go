@@ -53,7 +53,12 @@ func (c *SafeCounter) Print() {
 	log.Printf("[Counter] Count: %v", utils.IntToString(c.Get()))
 }
 
-var SharedCounter = SafeCounter{V: 0}
+var SharedCounter SafeCounter
+
+func InitializeCountService() {
+	SharedCounter = SafeCounter{V: 0}
+}
+	
 
 const (
 	prefetchLimit = 1000
@@ -133,6 +138,9 @@ func ProcessOperation(operation string, source string, param int) {
 	switch operation {
 	case "Increment":
 		SharedCounter.Increment(param, source)
+	case "Get":
+		// TODO
+		// SharedCounter.Get()
 	case "Decrement":
 		SharedCounter.Decrement(param, source)
 	case "Restart":
