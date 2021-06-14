@@ -20,7 +20,7 @@ var clientCount = 0
 var exe string
 var err error
 
-const PORT = ":2020"
+const PORT = ":2021"
 
 func Start() {
 	fmt.Println("[TCP Process Server]: Starting")
