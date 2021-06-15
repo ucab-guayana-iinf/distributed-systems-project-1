@@ -17,7 +17,7 @@ func main() {
 	var valor string
 	var s int
 	var err error
-	address := "localhost:2021"
+	address := "localhost:2020"
 	fmt.Println("[TCP Client]: Starting")
 	// host, port, err := net.SplitHostPort("127.0.0.1:5432")
 	// s := strings.Split("127.0.0.1:5432", ":")
