@@ -16,7 +16,7 @@ var tag = "[TCP Thread Server]:"
 
 func handleConnection(c net.Conn) {
 	defer c.Close()
-	fmt.Println(" Client connected with IP", c.RemoteAddr().String())
+	fmt.Println(tag, " Client connected with IP", c.RemoteAddr().String())
 	for {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
@@ -28,30 +28,25 @@ func handleConnection(c net.Conn) {
 		// Parse client message
 		temp := strings.TrimSpace(string(netData))
 
-		// Exit condition
-		if strings.ToUpper(temp) == "STOP" {
-			fmt.Println(tag, "Client disconnected")
-			clientCount--
-			break
-		}
-
 		arr := strings.Split(temp, " ")
 		action := arr[0]
 
-		if action == "Increment" || action == "Decrement" {
-			num := utils.StringToInt(arr[1])
-			count.Produce(action, "TCP Thread Server", num)
-		} else if action == "Restart" {
-			fmt.Println(tag, "Restart count")
-			// count.Produce(action, "TCP Thread Server", num)
-		} else if action == "Get" {
-			fmt.Println(tag, "Get count")
+		switch action {
+			case utils.STOP:
+				fmt.Println(tag, " Client", c.RemoteAddr().String(), "disconnected")
+				clientCount--
+				break
+			case utils.INCREMENT:
+				num := utils.StringToInt(arr[1])
+				count.Produce(action, "TCP Thread Server", num)
+			case utils.DECREMENT:
+				num := utils.StringToInt(arr[1])
+				count.Produce(action, "TCP Thread Server", num)
+			case utils.RESTART:
+				count.Produce(action, "TCP Thread Server", 0)
+			case utils.GET_COUNT:
+				count.Produce(action, "TCP Thread Server", 0)
 		}
-
-		// Respond to client with clientCount
-		// counter := strconv.Itoa(clientCount) + "\n"
-		// message := "Qlq mano, clientes conectados: " + counter
-		// c.Write([]byte(string(message)))
 	}
 }
 

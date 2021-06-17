@@ -1,85 +1,108 @@
-// package tcpClient
-package main
+package tcpClient
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"net"
-	"strconv"
 	"strings"
-	"unsafe"
+	"time"
 
-	"github.com/AlecAivazis/survey/v2"
+	"github.com/adjust/rmq/v3"
 )
 
-// To stop connection, send STOP message to server
-func main() {
-	var result string
-	var valor string
-	var s int
-	var err error
+func InitTCPClientConnection() (net.Conn, error) {
 	address := "localhost:2020"
-	fmt.Println("[TCP Client]: Starting")
-	// host, port, err := net.SplitHostPort("127.0.0.1:5432")
-	// s := strings.Split("127.0.0.1:5432", ":")
-	// ip, port := s[0], s[1]
-	// fmt.Println(ip, port)
-
-	// Connect to server
 	c, err := net.Dial("tcp", address)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil, errors.New("error connecting to localhost:2020")
+	}
+	return c, nil
+}
+
+func InitTCPProcessClientConnection() (net.Conn, error) {
+	address := "localhost:2021"
+	c, err := net.Dial("tcp", address)
+	if err != nil {
+		fmt.Println(err)
+		return nil, errors.New("error connecting to localhost:2020")
+	}
+	return c, nil
+}
+
+func InvokeTCPClientCall(client net.Conn, operation string, num int) {
+	fmt.Fprintf(client, "%v %v\n", operation, num)
+}
+
+const (
+	prefetchLimit = 1000
+	pollDuration  = 100 * time.Millisecond
+	numConsumers  = 5
+
+	reportBatchSize = 10000
+	consumeDuration = time.Millisecond
+	shouldLog       = false
+)
+
+
+type Consumer struct {
+	name   string
+	count  int
+	before time.Time
+}
+
+func NewConsumer() *Consumer {
+	return &Consumer{
+		count:  0,
+		before: time.Now(),
+	}
+}
+
+func (consumer *Consumer) Consume(delivery rmq.Delivery) {
+	payload := delivery.Payload()
+	parsed_payload := strings.Split(payload, ";")
+
+	count_value := parsed_payload[1]
+
+	consumer.count++
+	if consumer.count%reportBatchSize == 0 {
+		duration := time.Now().Sub(consumer.before)
+		consumer.before = time.Now()
+		perSecond := time.Second / (duration / reportBatchSize)
+		log.Printf("%s consumed %d %s %d", consumer.name, consumer.count, payload, perSecond)
 	}
 
-	// for {
-	// reader := bufio.NewReader(os.Stdin)
-	// fmt.Print(">> ")
-	// text, _ := reader.ReadString('\n')
-	// Read user input
-	for strings.Compare(result, "Salir") != 0 {
-		prompt := &survey.Select{
-			Message: "Que desea realizar:",
-			Options: []string{"Aumentar Cuenta", "Reducir Cuenta", "Salir"},
+	if consumer.count%reportBatchSize > 0 {
+		if err := delivery.Ack(); err != nil {
+			log.Printf("failed to ack %s: %s", payload, err)
+		} else {
+			log.Println("[TCP Thread Server response] La cuenta es de %v", count_value)
 		}
-		survey.AskOne(prompt, &result, survey.WithIcons(func(icons *survey.IconSet) {
-			icons.Question.Text = "🤡"
-		}))
-
-		for s == 0 && strings.Compare(result, "Salir") != 0 {
-			prompt := &survey.Input{
-				Message: "Ingrese un valor",
-			}
-			survey.AskOne(prompt, &valor, survey.WithIcons(func(icons *survey.IconSet) {
-				icons.Question.Text = "🤡"
-			}))
-			s, err = strconv.Atoi(valor)
-
-			if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Aumentar Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				fmt.Fprintf(c, "Increment "+valor+"\n")
-			} else if err == nil && strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Reducir Cuenta") == 0 && unsafe.Sizeof(s) <= 8 && s != 0 {
-				fmt.Fprintf(c, "Decrement "+valor+"\n")
-			} else if strings.Compare(result, "Salir") != 0 && strings.Compare(result, "Reiniciar Cuenta") == 0 {
-				fmt.Fprintf(c, "Restart\n")
-			} else {
-				fmt.Println("Numero invalido 🤡")
-			}
+	} else { // reject one per batch
+		if err := delivery.Reject(); err != nil {
+			log.Printf("failed to reject %s: %s", payload, err)
+		} else {
+			log.Printf("rejected %s", payload)
 		}
-		s = 0
 	}
-	// Salida
-	fmt.Fprintf(c, "Stop\n")
+}
 
-	// Send input to the server
-	// fmt.Fprintf(c, text+"\n")
+func ProcessTCPResponses() rmq.Queue {
+	connection, err := rmq.OpenConnection("consumer", "tcp", "localhost:6379", 2, nil)
+	if err != nil {
+		panic(err)
+	}
 
-	// Read messages from the server
-	// message, _ := bufio.NewReader(c).ReadString('\n')
-	// fmt.Print("Server: " + message)
+	queue, err := connection.OpenQueue("responses-" + "TCP Thread Server")
+	if err != nil {
+		panic(err)
+	}
 
-	// Check for exit signal
-	// if strings.ToUpper(strings.TrimSpace(string(text))) == "STOP" {
-	// 	fmt.Println("TCP client exiting...")
-	// 	return
-	// }
-	// }
+	if err := queue.StartConsuming(prefetchLimit, pollDuration); err != nil {
+		panic(err)
+	}
+
+	queue.AddConsumer("consumer-tcp-thread", NewConsumer())
+	return queue
 }

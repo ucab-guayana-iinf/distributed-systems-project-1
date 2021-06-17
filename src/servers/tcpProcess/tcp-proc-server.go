@@ -2,7 +2,6 @@ package tcpProcess
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -32,16 +31,16 @@ func Start() {
 	}
 
 	// flags
-	var optChild bool
+	// var optChild bool
 
-	flag.BoolVar(&optChild, "worker", false, "start as a worker process (internal only)")
-	flag.Parse()
+	// flag.BoolVar(&optChild, "worker", false, "start as a worker process (internal only)")
+	// flag.Parse()
 
-	if optChild { // we are in child process
-		childMain()
-	} else {
-		parentMain()
-	}
+	// if optChild { // we are in child process
+	// childMain()
+	// } else {
+	parentMain()
+	// }
 }
 
 func parentMain() {
@@ -88,7 +87,7 @@ func parentMain() {
 	}
 }
 
-func childMain() {
+func ChildMain() {
 	var tag = "[TCP Process Server Child " + utils.IntToString(os.Getpid()) + "]:"
 	// fd 0 = stdin, fd 1 = stdout, fd 2 = stderr
 	// Get connection from fd 3
@@ -112,24 +111,24 @@ func childMain() {
 		// Parse client message
 		temp := strings.TrimSpace(string(netData))
 
-		// Exit condition
-		if strings.ToUpper(temp) == "STOP" {
-			fmt.Println(tag, "Client disconnected")
-			clientCount--
-			break
-		}
-
 		arr := strings.Split(temp, " ")
 		action := arr[0]
 
-		if action == "Increment" || action == "Decrement" {
+		switch action {
+		case utils.STOP:
+			fmt.Println(tag, "Client", c.RemoteAddr().String(), "disconnected")
+			clientCount--
+			break
+		case utils.INCREMENT:
 			num := utils.StringToInt(arr[1])
 			count.Produce(action, "TCP Process Server", num)
-		} else if action == "Restart" {
-			fmt.Println(tag, "Restart count")
-			// count.Produce(action, "TCP Process Server", num)
-		} else if action == "Get" {
-			fmt.Println(tag, "Get count")
+		case utils.DECREMENT:
+			num := utils.StringToInt(arr[1])
+			count.Produce(action, "TCP Process Server", num)
+		case utils.RESTART:
+			count.Produce(action, "TCP Process Server", 0)
+		case utils.GET_COUNT:
+			count.Produce(action, "TCP Process Server", 0)
 		}
 
 		// Respond to client with clientCount

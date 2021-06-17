@@ -20,7 +20,6 @@ import (
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
-	// fmt.Printf("[Worker %v]: Started\n", id)
 	defer wg.Done()
 
 	switch id {
@@ -46,7 +45,6 @@ func runServers() {
 	countService.InitializeCountService()
 
 	for i := 1; i <= 5; i++ {
-		fmt.Println("[Main]: Starting worker", i)
 		wg.Add(1)
 		go start_server(&wg, i)
 	}
@@ -104,13 +102,20 @@ func runLocal() {
 
 func main() {
 	var serverFlag bool
+	var optChild bool
 
+	flag.BoolVar(&optChild, "worker", false, "start as a worker process (internal only)")
 	flag.BoolVar(&serverFlag, "server", false, "run servers instead of client")
 	flag.Parse()
 
-	if serverFlag {
-		runServers()
+	if optChild {
+		tcpProcess.ChildMain()
 	} else {
-		menu.Start()
+		if serverFlag {
+			runServers()
+		} else {
+			menu.Start()
+		}
 	}
+
 }

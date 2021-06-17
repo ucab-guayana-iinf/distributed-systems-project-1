@@ -2,7 +2,6 @@ package rpcServer
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"net/rpc"
@@ -50,7 +49,7 @@ func Start() {
 	if e != nil {
 		fmt.Println("Listen error: ", e)
 	}
-	log.Printf("✅ Serving RPC server on port %d", 1234)
+	fmt.Println("[RPC] Serving RPC server on port", 1234)
 	// Start accept incoming HTTP connections
 	err = http.Serve(listener, nil)
 	if err != nil {
