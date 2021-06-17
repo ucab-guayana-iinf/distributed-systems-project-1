@@ -56,7 +56,6 @@ func runServers() {
 	wg.Wait()
 }
 
-
 func printHelp() {
 	fmt.Println("|-------------------------------------|")
 	fmt.Println("| Instrucciones Consola Local         |")
@@ -104,13 +103,20 @@ func runLocal() {
 
 func main() {
 	var serverFlag bool
+	var optChild bool
 
+	flag.BoolVar(&optChild, "worker", false, "start as a worker process (internal only)")
 	flag.BoolVar(&serverFlag, "server", false, "run servers instead of client")
 	flag.Parse()
 
-	if serverFlag {
-		runServers()
+	if optChild {
+		tcpProcess.ChildMain()
 	} else {
-		menu.Start()
+		if serverFlag {
+			runServers()
+		} else {
+			menu.Start()
+		}
 	}
+
 }
