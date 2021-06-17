@@ -2,12 +2,14 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 
+	menu "proyecto1.com/main/src/clients/main"
 	"proyecto1.com/main/src/count"
 	countService "proyecto1.com/main/src/count"
 	rpcServer "proyecto1.com/main/src/servers/rpc"
@@ -38,8 +40,6 @@ func start_server(wg *sync.WaitGroup, id int) {
 	case 5:
 		countService.ProcessMessages()
 	}
-
-	fmt.Printf("[Worker %v]: Finished\n", id)
 }
 
 func runServers() {
@@ -53,28 +53,27 @@ func runServers() {
 	}
 	// Ejecutar Consola Local
 	wg.Add(1)
-	go runLocal(&wg)
+	runLocal()
 
 	wg.Wait()
 }
 
-func main() {
-	runServers()
-	// var serverFlag bool
 
-	// flag.BoolVar(&serverFlag, "server", false, "run servers instead of client")
-	// flag.Parse()
-
-	// if serverFlag {
-	// 	runServers()
-	// } else {
-	// 	runLocal()
-	// }
+func printHelp() {
+	fmt.Println("|-------------------------------------|")
+	fmt.Println("| Instrucciones Consola Local         |")
+	fmt.Println("|-------------------------------------|")
+	fmt.Println("| Comando | Descripción               |")
+	fmt.Println("|-------------------------------------|")
+	fmt.Println("| inc x   | Incrementa la cuenta en x |")
+	fmt.Println("| dec x   | Incrementa la cuenta en x |")
+	fmt.Println("| restart | Reinicia la cuenta a 0    |")
+	fmt.Println("| count   | Imprime la cuenta actual  |")
+	fmt.Println("|-------------------------------------|")
 }
 
 // Consola local sin el prompt de la libreria
-func runLocal(wg *sync.WaitGroup) {
-	// var tag = "[Local]:"
+func runLocal() {
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
@@ -88,16 +87,32 @@ func runLocal(wg *sync.WaitGroup) {
 		action := arr[0]
 
 		switch action {
-		case "increment":
+		case "inc":
 			num := utils.StringToInt(arr[1])
 			count.SharedCounter.Increment(num, "Local")
-		case "decrement":
+		case "dec":
 			num := utils.StringToInt(arr[1])
 			count.SharedCounter.Decrement(num, "Local")
 		case "restart":
 			count.SharedCounter.Restart("Local")
-		case "get":
+		case "count":
 			count.SharedCounter.Print()
+		default:
+			fmt.Println("Instrucción invalida")
+			printHelp()
 		}
+	}
+}
+
+func main() {
+	var serverFlag bool
+
+	flag.BoolVar(&serverFlag, "server", false, "run servers instead of client")
+	flag.Parse()
+
+	if serverFlag {
+		runServers()
+	} else {
+		menu.Start()
 	}
 }

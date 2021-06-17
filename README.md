@@ -37,7 +37,8 @@ TODO: documentar software requerido para correr el proyecto
 
 - Correr la aplicación principal 
   - `go install proyecto1`
-  - `go run src/main.go`
+  - Correr los servidores y consola local: `go run main.go --server`
+  - Correr consolas: `go run main.go`
 
 ## Integrantes 
 
