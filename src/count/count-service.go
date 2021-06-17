@@ -71,7 +71,7 @@ const (
 )
 
 func ProcessMessages() {
-	log.Printf("Started processing messages")
+	fmt.Println("[Count Service] Started processing messages")
 
 	connection, err := rmq.OpenConnection("consumer", "tcp", "localhost:6379", 2, nil)
 	if err != nil {
@@ -139,12 +139,28 @@ func ProcessOperation(operation string, source string, param int) {
 	case utils.INCREMENT:
 		SharedCounter.Increment(param, source)
 	case utils.GET_COUNT:
-		// TODO
-		// SharedCounter.Get()
+		ProduceResponse(source)
 	case utils.DECREMENT:
 		SharedCounter.Decrement(param, source)
 	case utils.RESTART:
 		SharedCounter.Restart(source)
+	}
+}
+
+func ProduceResponse(source string) {
+	connection, err := rmq.OpenConnection("producer", "tcp", "localhost:6379", 2, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	queue, err := connection.OpenQueue("responses-" + source)
+	if err != nil {
+		panic(err)
+	}
+
+	delivery := fmt.Sprintf("%v;%v", source, SharedCounter.Get())
+	if err := queue.Publish(delivery); err != nil {
+		log.Printf("failed to publish: %s", err)
 	}
 }
 

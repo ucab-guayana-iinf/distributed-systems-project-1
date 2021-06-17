@@ -11,6 +11,7 @@ import (
 	utils "proyecto1.com/main/src/utils"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/adjust/rmq/v3"
 )
 
 const TCP_THREAD_CLI = "TCP Hilos"
@@ -60,6 +61,7 @@ func Start() {
 	// var udp_client net.Conn
 	var tcp_client net.Conn
 	var err error = nil
+	var queue rmq.Queue
 
 	for in_main_prompt == true {
 		prompt := &survey.Select{
@@ -75,6 +77,7 @@ func Start() {
 				in_main_prompt = false
 			case TCP_THREAD_CLI:
 				tcp_client, err = tcpClient.InitTCPClientConnection()
+				queue = tcpClient.ProcessTCPResponses()
 				in_operation_prompt = true
 			case TCP_PROCESS_CLI:
 				tcp_client, err = tcpClient.InitTCPProcessClientConnection()
@@ -147,6 +150,7 @@ func Start() {
 				case BACK:
 					switch result {
 						case TCP_THREAD_CLI:
+							queue.StopConsuming()
 							tcpClient.InvokeTCPClientCall(tcp_client, utils.STOP, 0)
 						case TCP_PROCESS_CLI:
 							tcpClient.InvokeTCPClientCall(tcp_client, utils.STOP, 0)

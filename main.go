@@ -20,7 +20,6 @@ import (
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
-	// fmt.Printf("[Worker %v]: Started\n", id)
 	defer wg.Done()
 
 	switch id {
@@ -47,7 +46,6 @@ func runServers() {
 	countService.InitializeCountService()
 
 	for i := 1; i <= 5; i++ {
-		fmt.Println("[Main]: Starting worker", i)
 		wg.Add(1)
 		go start_server(&wg, i)
 	}
