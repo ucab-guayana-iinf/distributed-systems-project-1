@@ -15,8 +15,8 @@ import (
 	rpcServer "proyecto1.com/main/src/servers/rpc"
 	tcpProcess "proyecto1.com/main/src/servers/tcpProcess"
 	tcpThread "proyecto1.com/main/src/servers/tcpThread"
+	udpServer "proyecto1.com/main/src/servers/udp"
 	"proyecto1.com/main/src/utils"
-	// udpServer "proyecto1.com/main/src/servers/udp"
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
@@ -27,8 +27,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 	case 1:
 		tcpThread.Start()
 	case 2:
-		// apurate miguel
-		// udpServer.Start()
+		udpServer.Start()
 	case 3:
 		rpcServer.Start()
 	case 4:
@@ -57,7 +56,6 @@ func runServers() {
 
 	wg.Wait()
 }
-
 
 func printHelp() {
 	fmt.Println("|-------------------------------------|")

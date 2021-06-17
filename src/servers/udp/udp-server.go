@@ -2,35 +2,32 @@ package udpServer
 
 import (
 	"fmt"
-	"log"
 	"net"
+	"bufio"
+	"strings"
 )
 
-func serve(pc net.PacketConn, addr net.Addr, buf []byte) {
-	// 0 - 1: ID
-	// 2: QR(1): Opcode(4)
-	buf[2] |= 0x80 // Set QR bit
-
-	pc.WriteTo(buf, addr)
-}
-
 func Start() {
-	fmt.Println("[UDP Server]: Starting")
-	var port = "2002"
+	const PORT = ":2002"
 
-	pc, err := net.ListenPacket("udp", ":" + port)
-	fmt.Println("[UDP Server]: Running in http://localhost:" + port)
+	tag := "[UDP Server]:"
+
+	//	Returns an address of a endpoint UDP
+	resolveAddr, err := net.ResolveUDPAddr("udp4", PORT)
+
+	// Create a UDP server
+	c, err := net.ListenUDP("udp4", resolveAddr)
+
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error creando el servidor UDP", err)
+		return
 	}
-	defer pc.Close()
+
+	defer c.Close()
+
+	fmt.Println(tag, "Running in http://localhost"+PORT)
 
 	for {
-		buf := make([]byte, 1024)
-		n, addr, err := pc.ReadFrom(buf)
-		if err != nil {
-			continue
-		}
-		go serve(pc, addr, buf[:n])
+	
 	}
 }
