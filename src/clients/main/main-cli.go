@@ -2,10 +2,12 @@ package menu
 
 import (
 	"fmt"
+	"net"
 	"strconv"
 	"unsafe"
 
 	rpcConsole "proyecto1.com/main/src/clients/rpc"
+	tcpClient "proyecto1.com/main/src/clients/tcp"
 	utils "proyecto1.com/main/src/utils"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -17,13 +19,9 @@ const UDP_CLI = "UDP"
 const RPC_CLI = "RPC"
 const EXIT = "Salir"
 const BACK = "Volver"
-const INCREMENT = "Incrementar cuenta"
-const DECREMENT = "Decrementar cuenta"
-const RESTART = "Reiniciar cuenta"
-const GET_COUNT = "Imprimir cuenta"
 
 var MAIN_MENU_OPTIONS = []string{TCP_THREAD_CLI, TCP_PROCESS_CLI, UDP_CLI, RPC_CLI, EXIT}
-var OPERATIONS_OPTIONS = []string{INCREMENT, DECREMENT, RESTART, GET_COUNT, BACK}
+var OPERATIONS_OPTIONS = []string{utils.INCREMENT, utils.DECREMENT, utils.RESTART, utils.GET_COUNT, BACK}
 
 func askForNumber() int {
 	var v int
@@ -59,6 +57,9 @@ func Start() {
 	var in_operation_prompt bool = false
 	var result string
 	var operation string
+	// var udp_client net.Conn
+	var tcp_client net.Conn
+	var err error = nil
 
 	for in_main_prompt == true {
 		prompt := &survey.Select{
@@ -68,13 +69,24 @@ func Start() {
 		survey.AskOne(prompt, &result, survey.WithIcons(func(icons *survey.IconSet) {
 			icons.Question.Text = "➡️ "
 		}))
-		
-		if result == EXIT {
-			in_main_prompt = false
-		} else {
-			in_operation_prompt = true
+
+		switch result {
+			case EXIT:
+				in_main_prompt = false
+			case TCP_THREAD_CLI:
+				tcp_client, err = tcpClient.InitTCPClientConnection()
+				in_operation_prompt = true
+			case TCP_PROCESS_CLI:
+				tcp_client, err = tcpClient.InitTCPProcessClientConnection()
+				in_operation_prompt = true
+			default:
+				in_operation_prompt = true
 		}
 
+		if err != nil {
+			fmt.Println(err)
+		}
+		
 		for in_operation_prompt == true {
 			operation_prompt := &survey.Select{
 				Message: "¿Qué operacion desea realizar?",
@@ -85,57 +97,60 @@ func Start() {
 			}))
 
 			switch operation {
-				case INCREMENT:
+				case utils.INCREMENT:
 					num := askForNumber()
-					fmt.Printf("%v", num)
-					// TODO: increment using the selected client
 					switch result {
 						case TCP_THREAD_CLI:
-							// TODO: increment with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.INCREMENT, num)
 						case TCP_PROCESS_CLI:
-							// TODO: increment with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.INCREMENT, num)
 						case UDP_CLI:
 							// TODO: increment with udp
 						case RPC_CLI:
 							rpcConsole.InvokeRpcCall(utils.OPERATIONS.INCREMENT, num)
 							printCount(rpcConsole.InvokeRpcCall(utils.OPERATIONS.GET, 1))
 					}
-				case DECREMENT:
+				case utils.DECREMENT:
 					num := askForNumber()
-					fmt.Printf("%v", num)
 					switch result {
 						case TCP_THREAD_CLI:
-							// TODO: decrement with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.DECREMENT, num)
 						case TCP_PROCESS_CLI:
-							// TODO: decrement with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.DECREMENT, num)
 						case UDP_CLI:
 							// TODO: decrement with udp
 						case RPC_CLI:
 							rpcConsole.InvokeRpcCall(utils.OPERATIONS.DECREMENT, num)
 					}
-				case RESTART:
+				case utils.RESTART:
 					switch result {
 						case TCP_THREAD_CLI:
-							// TODO: restart with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.RESTART, 0)
 						case TCP_PROCESS_CLI:
-							// TODO: restart with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.RESTART, 0)
 						case UDP_CLI:
 							// TODO: restart with udp
 						case RPC_CLI:
 							rpcConsole.InvokeRpcCall(utils.OPERATIONS.RESTART, 1)
 					}
-				case GET_COUNT:
+				case utils.GET_COUNT:
 					switch result {
 						case TCP_THREAD_CLI:
-							// TODO: get count with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.GET_COUNT, 0)
 						case TCP_PROCESS_CLI:
-							// TODO: get count with tcp thread
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.GET_COUNT, 0)
 						case UDP_CLI:
 							// TODO: get count with udp
 						case RPC_CLI:
 							printCount(rpcConsole.InvokeRpcCall(utils.OPERATIONS.GET, 1))
 					}
 				case BACK:
+					switch result {
+						case TCP_THREAD_CLI:
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.STOP, 0)
+						case TCP_PROCESS_CLI:
+							tcpClient.InvokeTCPClientCall(tcp_client, utils.STOP, 0)
+					}
 					in_operation_prompt = false
 			}
 		}

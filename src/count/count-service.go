@@ -136,14 +136,14 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 
 func ProcessOperation(operation string, source string, param int) {
 	switch operation {
-	case "Increment":
+	case utils.INCREMENT:
 		SharedCounter.Increment(param, source)
-	case "Get":
+	case utils.GET_COUNT:
 		// TODO
 		// SharedCounter.Get()
-	case "Decrement":
+	case utils.DECREMENT:
 		SharedCounter.Decrement(param, source)
-	case "Restart":
+	case utils.RESTART:
 		SharedCounter.Restart(source)
 	}
 }

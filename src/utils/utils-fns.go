@@ -20,6 +20,12 @@ type OperationsStruct struct {
 
 var OPERATIONS = OperationsStruct{1, 2, 3, 4}
 
+const STOP = "STOP"
+const INCREMENT = "Incrementar"
+const DECREMENT = "Decrementar"
+const RESTART = "Reiniciar"
+const GET_COUNT = "Imprimir"
+
 func StartProcess() {
 	log.Printf("Haha business")
 
