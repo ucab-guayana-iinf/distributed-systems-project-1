@@ -77,7 +77,7 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 		if err := delivery.Ack(); err != nil {
 			log.Printf("failed to ack %s: %s", payload, err)
 		} else {
-			log.Println("[TCP Thread Server response] La cuenta es de %v", count_value)
+			log.Println("[TCP Thread Server response] La cuenta es de", count_value)
 		}
 	} else { // reject one per batch
 		if err := delivery.Reject(); err != nil {
