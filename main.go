@@ -15,8 +15,9 @@ import (
 	rpcServer "proyecto1.com/main/src/servers/rpc"
 	tcpProcess "proyecto1.com/main/src/servers/tcpProcess"
 	tcpThread "proyecto1.com/main/src/servers/tcpThread"
-	udpServer "proyecto1.com/main/src/servers/udp"
-	"proyecto1.com/main/src/utils"
+
+	// udpServer "proyecto1.com/main/src/servers/udp"
+	utils "proyecto1.com/main/src/utils"
 )
 
 func start_server(wg *sync.WaitGroup, id int) {
@@ -26,7 +27,8 @@ func start_server(wg *sync.WaitGroup, id int) {
 	case 1:
 		tcpThread.Start()
 	case 2:
-		udpServer.Start()
+		// habilitalo solo cuando sirva pls.
+		// udpServer.Start()
 	case 3:
 		rpcServer.Start()
 	case 4:
