@@ -63,6 +63,7 @@ func Start() {
 	var tcp_client net.Conn
 	var err error = nil
 	var queue rmq.Queue
+	var udpQueue rmq.Queue
 
 	for in_main_prompt == true {
 		prompt := &survey.Select{
@@ -85,6 +86,7 @@ func Start() {
 			in_operation_prompt = true
 		case UDP_CLI:
 			udp_client, err = udpClient.InitUDPClientConnection()
+			udpQueue = udpClient.ProcessUDPResponses()
 			in_operation_prompt = true
 		default:
 			in_operation_prompt = true
@@ -159,6 +161,7 @@ func Start() {
 				case TCP_PROCESS_CLI:
 					tcpClient.InvokeTCPClientCall(tcp_client, utils.STOP, 0)
 				case UDP_CLI:
+					udpQueue.StopConsuming()
 					udpClient.InvokeUDPClientCall(udp_client, utils.STOP, 0)
 				}
 				in_operation_prompt = false
