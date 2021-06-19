@@ -8,6 +8,7 @@ import (
 	"time"
 
 	rmq "github.com/adjust/rmq/v3"
+	dbService "proyecto1.com/main/src/db"
 	utils "proyecto1.com/main/src/utils"
 )
 
@@ -25,6 +26,7 @@ func (c *SafeCounter) Restart(source string) int {
 	defer c.mu.Unlock()
 	var before = c.V
 	c.V = 0
+	dbService.UpdateCount(c.V)
 	log.Printf("[Counter] [%s] Before: %v. Restarted to 0", source, before)
 	return c.Get()
 }
@@ -35,6 +37,7 @@ func (c *SafeCounter) Increment(n int, source string) int {
 	var before = c.V
 	c.V += n
 	var after = c.V
+	dbService.UpdateCount(c.V)
 	log.Printf("[Counter] [%s] Before: %v. After: %v. Incremented by: %v", source, before, after, n)
 	return c.Get()
 }
@@ -45,6 +48,7 @@ func (c *SafeCounter) Decrement(n int, source string) int {
 	var before = c.V
 	c.V -= n
 	var after = c.V
+	dbService.UpdateCount(c.V)
 	log.Printf("[Counter] [%s] Before: %v. After: %v. Decremented by: %v", source, before, after, n)
 	return c.Get()
 }
@@ -56,7 +60,9 @@ func (c *SafeCounter) Print() {
 var SharedCounter SafeCounter
 
 func InitializeCountService() {
-	SharedCounter = SafeCounter{V: 0}
+	initial_count_value := dbService.Initialize()
+	fmt.Println("[DB] la cuenta es:", initial_count_value)
+	SharedCounter = SafeCounter{V: initial_count_value}
 }
 
 const (

@@ -14,6 +14,4 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.7 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect
 	golang.org/x/sys v0.0.0-20210531225629-47163c9f4e4f // indirect
-	gorm.io/driver/sqlite v1.1.4 // indirect
-	gorm.io/gorm v1.21.10 // indirect
 )
