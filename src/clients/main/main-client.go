@@ -87,7 +87,7 @@ func Start() {
 			in_operation_prompt = true
 		case UDP_CLI:
 			udp_client, err = udpClient.InitUDPClientConnection(ServerIP)
-			queueName = "responses-" + "UDP Server" // TODO: Agregar la ip:puerto del cliente
+			queueName = "responses-" + "UDP Server" + udp_client.LocalAddr().String()
 			udpQueue = udpClient.ProcessUDPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		default:
@@ -169,6 +169,5 @@ func Start() {
 				in_operation_prompt = false
 			}
 		}
-
 	}
 }

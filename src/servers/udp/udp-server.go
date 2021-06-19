@@ -53,8 +53,7 @@ func Start() {
 		case utils.RESTART:
 			count.Produce(action, "UDP Server", 0)
 		case utils.GET_COUNT:
-			fmt.Println("UDP Client:", addr)
-			count.Produce(action, "UDP Server", 0)
+			count.Produce(action, "UDP Server"+addr.String(), 0)
 		}
 	}
 }

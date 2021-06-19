@@ -88,7 +88,7 @@ func ProcessUDPResponses(queueName, ip string) rmq.Queue {
 		panic(err)
 	}
 
-	queue, err := connection.OpenQueue("responses-" + "UDP Server")
+	queue, err := connection.OpenQueue(queueName)
 	if err != nil {
 		panic(err)
 	}
