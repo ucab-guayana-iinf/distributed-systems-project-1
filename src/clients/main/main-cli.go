@@ -103,7 +103,7 @@ func Start() {
 
 		for in_operation_prompt {
 			operation_prompt := &survey.Select{
-				Message: "¿Qué operacion desea realizar?",
+				Message: fmt.Sprintf("[%v] ¿Qué operacion desea realizar?", result),
 				Options: OPERATIONS_OPTIONS,
 			}
 			survey.AskOne(operation_prompt, &operation, survey.WithIcons(func(icons *survey.IconSet) {
