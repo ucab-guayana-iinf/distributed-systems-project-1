@@ -1,7 +1,6 @@
 package udpServer
 
 import (
-	"bufio"
 	"fmt"
 	"net"
 	"strings"
@@ -16,7 +15,7 @@ func Start() {
 
 	fmt.Println(tag, "Starting")
 
-	//	Returns an address of a endpoint UDP
+	// Returns an address of a endpoint UDP
 	resolveAddr, err := net.ResolveUDPAddr("udp4", PORT)
 
 	// Create a UDP server
@@ -24,7 +23,6 @@ func Start() {
 
 	if err != nil {
 		fmt.Println("Error creando el servidor UDP", err)
-
 		return
 	}
 
@@ -32,32 +30,31 @@ func Start() {
 
 	fmt.Println(tag, "Running in http://localhost"+PORT)
 
+	buffer := make([]byte, 1024)
+
 	for {
-		netData, err := bufio.NewReader(c).ReadString('\n')
+		n, addr, err := c.ReadFromUDP(buffer)
 
 		if err != nil {
 			fmt.Println(tag, "Error leyendo el input de la conexion:", err)
 			return
 		}
 
-		// Parse client message
-		temp := strings.TrimSpace(string(netData))
-
-		arr := strings.Split(temp, " ")
+		clientDataUdp := strings.Trim(string(buffer[:n]), "\n")
+		arr := strings.Split(clientDataUdp, " ")
 		action := arr[0]
+		num := utils.StringToInt(arr[1])
 
 		switch action {
 		case utils.INCREMENT:
-			num := utils.StringToInt(arr[1])
 			count.Produce(action, "UDP Server", num)
 		case utils.DECREMENT:
-			num := utils.StringToInt(arr[1])
 			count.Produce(action, "UDP Server", num)
 		case utils.RESTART:
 			count.Produce(action, "UDP Server", 0)
 		case utils.GET_COUNT:
+			fmt.Println("UDP Client:", addr)
 			count.Produce(action, "UDP Server", 0)
 		}
-
 	}
 }
