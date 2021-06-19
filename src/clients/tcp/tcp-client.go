@@ -11,22 +11,23 @@ import (
 	"github.com/adjust/rmq/v3"
 )
 
-func InitTCPClientConnection() (net.Conn, error) {
-	address := "localhost:2020"
+func InitTCPClientConnection(ip string) (net.Conn, error) {
+	address := ip + ":2020"
+
 	c, err := net.Dial("tcp", address)
 	if err != nil {
 		fmt.Println(err)
-		return nil, errors.New("error connecting to localhost:2020")
+		return nil, errors.New("error connecting to server")
 	}
 	return c, nil
 }
 
-func InitTCPProcessClientConnection() (net.Conn, error) {
-	address := "localhost:2021"
+func InitTCPProcessClientConnection(ip string) (net.Conn, error) {
+	address := ip + ":2021"
 	c, err := net.Dial("tcp", address)
 	if err != nil {
 		fmt.Println(err)
-		return nil, errors.New("error connecting to localhost:2020")
+		return nil, errors.New("error connecting to server")
 	}
 	return c, nil
 }
@@ -88,8 +89,8 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 }
 
 // Recibe el ip:port de la conexion TCP para crear una cola unica
-func ProcessTCPResponses(queueName string) rmq.Queue {
-	connection, err := rmq.OpenConnection("consumer", "tcp", "localhost:6379", 2, nil)
+func ProcessTCPResponses(queueName, ip string) rmq.Queue {
+	connection, err := rmq.OpenConnection("consumer", "tcp", ip+":6379", 2, nil)
 	if err != nil {
 		panic(err)
 	}

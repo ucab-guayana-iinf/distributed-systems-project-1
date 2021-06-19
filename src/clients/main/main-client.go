@@ -3,11 +3,10 @@ package menu
 import (
 	"fmt"
 	"net"
-	"runtime"
 	"strconv"
 	"unsafe"
 
-	rpcConsole "proyecto1.com/main/src/clients/rpc"
+	rpcClient "proyecto1.com/main/src/clients/rpc"
 	tcpClient "proyecto1.com/main/src/clients/tcp"
 	udpClient "proyecto1.com/main/src/clients/udp"
 	utils "proyecto1.com/main/src/utils"
@@ -25,6 +24,7 @@ const BACK = "Volver"
 
 var MAIN_MENU_OPTIONS = []string{TCP_THREAD_CLI, TCP_PROCESS_CLI, UDP_CLI, RPC_CLI, EXIT}
 var OPERATIONS_OPTIONS = []string{utils.INCREMENT, utils.DECREMENT, utils.RESTART, utils.GET_COUNT, BACK}
+var ServerIP string
 
 func askForNumber() int {
 	var v int
@@ -56,8 +56,8 @@ func printCount(count int) {
 }
 
 func Start() {
-	var in_main_prompt bool = true
-	var in_operation_prompt bool = false
+	var in_main_prompt = true
+	var in_operation_prompt = false
 	var result, operation, queueName string
 	var tcp_client, udp_client net.Conn
 	var err error = nil
@@ -76,22 +76,19 @@ func Start() {
 		case EXIT:
 			in_main_prompt = false
 		case TCP_THREAD_CLI:
-			tcp_client, err = tcpClient.InitTCPClientConnection()
+			tcp_client, err = tcpClient.InitTCPClientConnection(ServerIP)
 			queueName = "responses-" + "TCP Thread Server" + tcp_client.LocalAddr().String()
-			queue = tcpClient.ProcessTCPResponses(queueName)
+			queue = tcpClient.ProcessTCPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		case TCP_PROCESS_CLI:
-			if runtime.GOOS == "windows" {
-				fmt.Println("No disponible en windows")
-				break
-			}
-			tcp_client, err = tcpClient.InitTCPProcessClientConnection()
+			tcp_client, err = tcpClient.InitTCPProcessClientConnection(ServerIP)
 			queueName = "responses-" + "TCP Process Server" + tcp_client.LocalAddr().String()
-			queue = tcpClient.ProcessTCPResponses(queueName)
+			queue = tcpClient.ProcessTCPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		case UDP_CLI:
-			udp_client, err = udpClient.InitUDPClientConnection()
-			udpQueue = udpClient.ProcessUDPResponses()
+			udp_client, err = udpClient.InitUDPClientConnection(ServerIP)
+			queueName = "responses-" + "UDP Server" // TODO: Agregar la ip:puerto del cliente
+			udpQueue = udpClient.ProcessUDPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		default:
 			in_operation_prompt = true
@@ -121,8 +118,8 @@ func Start() {
 				case UDP_CLI:
 					udpClient.InvokeUDPClientCall(udp_client, utils.INCREMENT, num)
 				case RPC_CLI:
-					rpcConsole.InvokeRpcCall(utils.OPERATIONS.INCREMENT, num)
-					// printCount(rpcConsole.InvokeRpcCall(utils.OPERATIONS.GET, 1))
+					rpcClient.InvokeRpcCall(utils.OPERATIONS.INCREMENT, num, ServerIP)
+					// printCount(rpcClient.InvokeRpcCall(utils.OPERATIONS.GET, 1))
 				}
 			case utils.DECREMENT:
 				num := askForNumber()
@@ -134,7 +131,7 @@ func Start() {
 				case UDP_CLI:
 					udpClient.InvokeUDPClientCall(udp_client, utils.DECREMENT, num)
 				case RPC_CLI:
-					rpcConsole.InvokeRpcCall(utils.OPERATIONS.DECREMENT, num)
+					rpcClient.InvokeRpcCall(utils.OPERATIONS.DECREMENT, num, ServerIP)
 				}
 			case utils.RESTART:
 				switch result {
@@ -145,7 +142,7 @@ func Start() {
 				case UDP_CLI:
 					udpClient.InvokeUDPClientCall(udp_client, utils.RESTART, 0)
 				case RPC_CLI:
-					rpcConsole.InvokeRpcCall(utils.OPERATIONS.RESTART, 1)
+					rpcClient.InvokeRpcCall(utils.OPERATIONS.RESTART, 1, ServerIP)
 				}
 			case utils.GET_COUNT:
 				switch result {
@@ -156,7 +153,7 @@ func Start() {
 				case UDP_CLI:
 					udpClient.InvokeUDPClientCall(udp_client, utils.GET_COUNT, 0)
 				case RPC_CLI:
-					printCount(rpcConsole.InvokeRpcCall(utils.OPERATIONS.GET, 1))
+					printCount(rpcClient.InvokeRpcCall(utils.OPERATIONS.GET, 1, ServerIP))
 				}
 			case BACK:
 				switch result {
