@@ -32,7 +32,7 @@ func start_server(wg *sync.WaitGroup, id int) {
 		rpcServer.Start()
 	case 4:
 		if runtime.GOOS == "windows" {
-			fmt.Println("Saltando el TCP con procesos en windows pa que no explote")
+			fmt.Println("Saltando el TCP con procesos en windows")
 		} else {
 			tcpProcess.Start()
 		}

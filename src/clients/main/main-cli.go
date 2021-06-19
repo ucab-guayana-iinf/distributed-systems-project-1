@@ -3,6 +3,7 @@ package menu
 import (
 	"fmt"
 	"net"
+	"runtime"
 	"strconv"
 	"unsafe"
 
@@ -57,15 +58,12 @@ func printCount(count int) {
 func Start() {
 	var in_main_prompt bool = true
 	var in_operation_prompt bool = false
-	var result string
-	var operation string
-	var udp_client net.Conn
-	var tcp_client net.Conn
+	var result, operation, queueName string
+	var tcp_client, udp_client net.Conn
 	var err error = nil
-	var queue rmq.Queue
-	var udpQueue rmq.Queue
+	var queue, udpQueue rmq.Queue
 
-	for in_main_prompt == true {
+	for in_main_prompt {
 		prompt := &survey.Select{
 			Message: "¿A qué consola se desea conectar?",
 			Options: MAIN_MENU_OPTIONS,
@@ -79,10 +77,17 @@ func Start() {
 			in_main_prompt = false
 		case TCP_THREAD_CLI:
 			tcp_client, err = tcpClient.InitTCPClientConnection()
-			queue = tcpClient.ProcessTCPResponses(tcp_client.LocalAddr().String())
+			queueName = "responses-" + "TCP Thread Server" + tcp_client.LocalAddr().String()
+			queue = tcpClient.ProcessTCPResponses(queueName)
 			in_operation_prompt = true
 		case TCP_PROCESS_CLI:
+			if runtime.GOOS == "windows" {
+				fmt.Println("No disponible en windows")
+				break
+			}
 			tcp_client, err = tcpClient.InitTCPProcessClientConnection()
+			queueName = "responses-" + "TCP Process Server" + tcp_client.LocalAddr().String()
+			queue = tcpClient.ProcessTCPResponses(queueName)
 			in_operation_prompt = true
 		case UDP_CLI:
 			udp_client, err = udpClient.InitUDPClientConnection()
@@ -96,7 +101,7 @@ func Start() {
 			fmt.Println(err)
 		}
 
-		for in_operation_prompt == true {
+		for in_operation_prompt {
 			operation_prompt := &survey.Select{
 				Message: "¿Qué operacion desea realizar?",
 				Options: OPERATIONS_OPTIONS,
@@ -117,7 +122,7 @@ func Start() {
 					udpClient.InvokeUDPClientCall(udp_client, utils.INCREMENT, num)
 				case RPC_CLI:
 					rpcConsole.InvokeRpcCall(utils.OPERATIONS.INCREMENT, num)
-					printCount(rpcConsole.InvokeRpcCall(utils.OPERATIONS.GET, 1))
+					// printCount(rpcConsole.InvokeRpcCall(utils.OPERATIONS.GET, 1))
 				}
 			case utils.DECREMENT:
 				num := askForNumber()

@@ -24,25 +24,16 @@ const PORT = ":2021"
 func Start() {
 	fmt.Println("[TCP Process Server]: Starting")
 
-	// determine executable
+	// determine program executable
 	if exe, err = os.Executable(); err != nil {
 		fmt.Println("Error obteniendo ejecutable")
 		return
 	}
 
-	// flags
-	// var optChild bool
-
-	// flag.BoolVar(&optChild, "worker", false, "start as a worker process (internal only)")
-	// flag.Parse()
-
-	// if optChild { // we are in child process
-	// childMain()
-	// } else {
 	parentMain()
-	// }
 }
 
+// Funcion que escucha las conexiones TCP y crea los procesos hijos
 func parentMain() {
 	var tag = "[TCP Process Server Parent]:"
 	// Make the TCP server listener
@@ -87,6 +78,7 @@ func parentMain() {
 	}
 }
 
+// Funcion que ejecutan los procesos hijos para atender clientes
 func ChildMain() {
 	var tag = "[TCP Process Server Child " + utils.IntToString(os.Getpid()) + "]:"
 	// fd 0 = stdin, fd 1 = stdout, fd 2 = stderr
@@ -128,7 +120,7 @@ func ChildMain() {
 		case utils.RESTART:
 			count.Produce(action, "TCP Process Server", 0)
 		case utils.GET_COUNT:
-			count.Produce(action, "TCP Process Server", 0)
+			count.Produce(action, "TCP Process Server"+c.RemoteAddr().String(), 0)
 		}
 
 		// Respond to client with clientCount

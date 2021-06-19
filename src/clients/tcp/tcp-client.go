@@ -76,7 +76,7 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 		if err := delivery.Ack(); err != nil {
 			log.Printf("failed to ack %s: %s", payload, err)
 		} else {
-			log.Println("[TCP Thread Server response] La cuenta es de", count_value)
+			log.Println("[TCP Server response] La cuenta es de", count_value)
 		}
 	} else { // reject one per batch
 		if err := delivery.Reject(); err != nil {
@@ -88,14 +88,13 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 }
 
 // Recibe el ip:port de la conexion TCP para crear una cola unica
-func ProcessTCPResponses(client string) rmq.Queue {
-	fmt.Println("local add", client)
+func ProcessTCPResponses(queueName string) rmq.Queue {
 	connection, err := rmq.OpenConnection("consumer", "tcp", "localhost:6379", 2, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	queue, err := connection.OpenQueue("responses-" + "TCP Thread Server" + client)
+	queue, err := connection.OpenQueue(queueName)
 	if err != nil {
 		panic(err)
 	}
@@ -104,6 +103,6 @@ func ProcessTCPResponses(client string) rmq.Queue {
 		panic(err)
 	}
 
-	queue.AddConsumer("consumer-tcp-thread", NewConsumer())
+	queue.AddConsumer("consumer-tcp", NewConsumer())
 	return queue
 }
