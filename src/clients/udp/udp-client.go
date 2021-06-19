@@ -11,8 +11,8 @@ import (
 	"github.com/adjust/rmq/v3"
 )
 
-func InitUDPClientConnection() (net.Conn, error) {
-	address := "localhost:2002"
+func InitUDPClientConnection(ip string) (net.Conn, error) {
+	address := ip + ":2002"
 
 	resolveAddr, err := net.ResolveUDPAddr("udp4", address)
 	c, err := net.DialUDP("udp4", nil, resolveAddr)
@@ -20,7 +20,7 @@ func InitUDPClientConnection() (net.Conn, error) {
 	if err != nil {
 		fmt.Println(err)
 
-		return nil, errors.New("error connecting to localhost:2002")
+		return nil, errors.New("error connecting to server")
 	}
 
 	return c, nil
@@ -82,8 +82,8 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 	}
 }
 
-func ProcessUDPResponses() rmq.Queue {
-	connection, err := rmq.OpenConnection("consumer", "tcp", "localhost:6379", 2, nil)
+func ProcessUDPResponses(queueName, ip string) rmq.Queue {
+	connection, err := rmq.OpenConnection("consumer", "tcp", ip+":6379", 2, nil)
 	if err != nil {
 		panic(err)
 	}

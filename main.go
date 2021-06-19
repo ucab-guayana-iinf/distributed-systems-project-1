@@ -102,12 +102,20 @@ func runLocal() {
 }
 
 func main() {
-	var serverFlag bool
-	var optChild bool
+	var serverFlag, optChild bool
+	var ip string
 
 	flag.BoolVar(&optChild, "worker", false, "start as a worker process (internal only)")
 	flag.BoolVar(&serverFlag, "server", false, "run servers instead of client")
+	flag.StringVar(&ip, "ip", "127.0.0.1", "sets the servers IP address")
 	flag.Parse()
+
+	if !utils.IsValidIP(ip) {
+		fmt.Println("Por favor ingrese una IP valida")
+		return
+	}
+
+	menu.ServerIP = ip
 
 	if optChild {
 		tcpProcess.ChildMain()

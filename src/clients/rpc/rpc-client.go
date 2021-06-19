@@ -7,10 +7,11 @@ import (
 	"proyecto1.com/main/src/utils"
 )
 
-func InvokeRpcCall(operation int, input int) int {
+func InvokeRpcCall(operation int, input int, ip string) int {
 	var err error
+	var address = ip + ":1234"
 
-	client, err := rpc.DialHTTP("tcp", "localhost:1234")
+	client, err := rpc.DialHTTP("tcp", address)
 	if err != nil {
 		log.Fatal("Connection error: ", err)
 	}

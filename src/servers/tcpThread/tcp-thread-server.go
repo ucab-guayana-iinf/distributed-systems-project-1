@@ -14,6 +14,8 @@ import (
 var clientCount = 0
 var tag = "[TCP Thread Server]:"
 
+const PORT = ":2020"
+
 func handleConnection(c net.Conn) {
 	defer c.Close()
 	fmt.Println(tag, " Client connected with IP", c.RemoteAddr().String())
@@ -51,7 +53,6 @@ func handleConnection(c net.Conn) {
 }
 
 func Start() {
-	const PORT = ":2020"
 	fmt.Println(tag, "Starting")
 
 	// Make the TCP Thread server listener

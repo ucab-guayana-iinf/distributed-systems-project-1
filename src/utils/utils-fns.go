@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"net"
 	"strconv"
 )
 
@@ -29,4 +30,8 @@ func StringToInt(s string) int {
 		panic(err)
 	}
 	return res
+}
+
+func IsValidIP(ip string) bool {
+	return net.ParseIP(ip) != nil
 }
