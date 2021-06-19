@@ -31,8 +31,8 @@ func InitTCPProcessClientConnection() (net.Conn, error) {
 	return c, nil
 }
 
-func InvokeTCPClientCall(client net.Conn, operation string, num int) {
-	fmt.Fprintf(client, "%v %v\n", operation, num)
+func InvokeTCPClientCall(conn net.Conn, operation string, num int) {
+	fmt.Fprintf(conn, "%v %v\n", operation, num)
 }
 
 const (
@@ -44,7 +44,6 @@ const (
 	consumeDuration = time.Millisecond
 	shouldLog       = false
 )
-
 
 type Consumer struct {
 	name   string
@@ -88,13 +87,15 @@ func (consumer *Consumer) Consume(delivery rmq.Delivery) {
 	}
 }
 
-func ProcessTCPResponses() rmq.Queue {
+// Recibe el ip:port de la conexion TCP para crear una cola unica
+func ProcessTCPResponses(client string) rmq.Queue {
+	fmt.Println("local add", client)
 	connection, err := rmq.OpenConnection("consumer", "tcp", "localhost:6379", 2, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	queue, err := connection.OpenQueue("responses-" + "TCP Thread Server")
+	queue, err := connection.OpenQueue("responses-" + "TCP Thread Server" + client)
 	if err != nil {
 		panic(err)
 	}

@@ -32,20 +32,20 @@ func handleConnection(c net.Conn) {
 		action := arr[0]
 
 		switch action {
-			case utils.STOP:
-				fmt.Println(tag, " Client", c.RemoteAddr().String(), "disconnected")
-				clientCount--
-				break
-			case utils.INCREMENT:
-				num := utils.StringToInt(arr[1])
-				count.Produce(action, "TCP Thread Server", num)
-			case utils.DECREMENT:
-				num := utils.StringToInt(arr[1])
-				count.Produce(action, "TCP Thread Server", num)
-			case utils.RESTART:
-				count.Produce(action, "TCP Thread Server", 0)
-			case utils.GET_COUNT:
-				count.Produce(action, "TCP Thread Server", 0)
+		case utils.STOP:
+			fmt.Println(tag, " Client", c.RemoteAddr().String(), "disconnected")
+			clientCount--
+			break
+		case utils.INCREMENT:
+			num := utils.StringToInt(arr[1])
+			count.Produce(action, "TCP Thread Server", num)
+		case utils.DECREMENT:
+			num := utils.StringToInt(arr[1])
+			count.Produce(action, "TCP Thread Server", num)
+		case utils.RESTART:
+			count.Produce(action, "TCP Thread Server", 0)
+		case utils.GET_COUNT:
+			count.Produce(action, "TCP Thread Server"+c.RemoteAddr().String(), 0)
 		}
 	}
 }

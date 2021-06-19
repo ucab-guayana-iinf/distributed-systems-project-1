@@ -13,7 +13,7 @@ import (
 
 type SafeCounter struct {
 	mu sync.Mutex
-	V int
+	V  int
 }
 
 func (c *SafeCounter) Get() int {
@@ -58,7 +58,6 @@ var SharedCounter SafeCounter
 func InitializeCountService() {
 	SharedCounter = SafeCounter{V: 0}
 }
-	
 
 const (
 	prefetchLimit = 1000
@@ -147,6 +146,7 @@ func ProcessOperation(operation string, source string, param int) {
 	}
 }
 
+// Envia de vuelta el mensaje de la cuenta a traves de la cola particular del cliente
 func ProduceResponse(source string) {
 	connection, err := rmq.OpenConnection("producer", "tcp", "localhost:6379", 2, nil)
 	if err != nil {

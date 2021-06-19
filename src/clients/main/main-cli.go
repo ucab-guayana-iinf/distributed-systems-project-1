@@ -79,7 +79,7 @@ func Start() {
 			in_main_prompt = false
 		case TCP_THREAD_CLI:
 			tcp_client, err = tcpClient.InitTCPClientConnection()
-			queue = tcpClient.ProcessTCPResponses()
+			queue = tcpClient.ProcessTCPResponses(tcp_client.LocalAddr().String())
 			in_operation_prompt = true
 		case TCP_PROCESS_CLI:
 			tcp_client, err = tcpClient.InitTCPProcessClientConnection()
