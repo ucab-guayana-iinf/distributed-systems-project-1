@@ -7,7 +7,6 @@ import (
 	"net"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 
 	"proyecto1.com/main/src/count"
@@ -110,7 +109,7 @@ func ChildMain() {
 		case utils.STOP:
 			fmt.Println(tag, "Client", c.RemoteAddr().String(), "disconnected")
 			clientCount--
-			break
+			return
 		case utils.INCREMENT:
 			num := utils.StringToInt(arr[1])
 			count.Produce(action, "TCP Process Server", num)
@@ -122,10 +121,5 @@ func ChildMain() {
 		case utils.GET_COUNT:
 			count.Produce(action, "TCP Process Server"+c.RemoteAddr().String(), 0)
 		}
-
-		// Respond to client with clientCount
-		counter := strconv.Itoa(clientCount) + "\n"
-		message := "Qlq mano, clientes conectados: " + counter
-		c.Write([]byte(string(message)))
 	}
 }
