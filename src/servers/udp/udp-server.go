@@ -34,7 +34,6 @@ func Start() {
 
 	for {
 		n, addr, err := c.ReadFromUDP(buffer)
-
 		if err != nil {
 			fmt.Println(tag, "Error leyendo el input de la conexion:", err)
 			return
@@ -54,6 +53,9 @@ func Start() {
 			count.Produce(action, "UDP Server", 0)
 		case utils.GET_COUNT:
 			count.Produce(action, "UDP Server"+addr.String(), 0)
+		default:
+			// Enviarle su ip al cliente para identificar la cola de lecturas
+			_, _ = c.WriteToUDP([]byte(addr.String()), addr)
 		}
 	}
 }

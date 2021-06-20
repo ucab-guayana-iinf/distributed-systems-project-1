@@ -1,6 +1,7 @@
 package udpClient
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/adjust/rmq/v3"
 )
+
+var clientId string
 
 func InitUDPClientConnection(ip string) (net.Conn, error) {
 	address := ip + ":2002"
@@ -23,6 +26,15 @@ func InitUDPClientConnection(ip string) (net.Conn, error) {
 		return nil, errors.New("error connecting to server")
 	}
 
+	// Pedir mi ip publica
+	fmt.Fprintf(c, "hola 0")
+	buffer := make([]byte, 1024)
+	n, err := bufio.NewReader(c).Read(buffer)
+	if err == nil {
+		clientId = strings.TrimSpace(string(buffer[:n]))
+	} else {
+		fmt.Printf("Error leyendo respuesta del server %v\n", err)
+	}
 	return c, nil
 }
 
@@ -87,8 +99,8 @@ func ProcessUDPResponses(queueName, ip string) rmq.Queue {
 	if err != nil {
 		panic(err)
 	}
-
-	queue, err := connection.OpenQueue(queueName)
+	fmt.Println(len(clientId))
+	queue, err := connection.OpenQueue(queueName + clientId)
 	if err != nil {
 		panic(err)
 	}

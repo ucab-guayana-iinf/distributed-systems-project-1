@@ -1,6 +1,7 @@
 package tcpClient
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
@@ -11,6 +12,8 @@ import (
 	"github.com/adjust/rmq/v3"
 )
 
+var clientId string
+
 func InitTCPClientConnection(ip string) (net.Conn, error) {
 	address := ip + ":2020"
 
@@ -19,6 +22,9 @@ func InitTCPClientConnection(ip string) (net.Conn, error) {
 		fmt.Println(err)
 		return nil, errors.New("error connecting to server")
 	}
+
+	id, _ := bufio.NewReader(c).ReadString('\n')
+	clientId = strings.TrimSpace(id)
 	return c, nil
 }
 
@@ -94,8 +100,7 @@ func ProcessTCPResponses(queueName, ip string) rmq.Queue {
 	if err != nil {
 		panic(err)
 	}
-
-	queue, err := connection.OpenQueue(queueName)
+	queue, err := connection.OpenQueue(queueName + clientId)
 	if err != nil {
 		panic(err)
 	}

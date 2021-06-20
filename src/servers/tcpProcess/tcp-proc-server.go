@@ -52,7 +52,6 @@ func parentMain() {
 			return
 		}
 		clientCount++
-
 		// Get the fd copy of the TCP connection
 		var f *os.File
 
@@ -64,7 +63,8 @@ func parentMain() {
 		defer f.Close() // After fd is passed to the child process, it can also be safely closed
 
 		// Serve each client with a child process
-		cmd := exec.Command(exe, append([]string{"-worker"}, os.Args[1:]...)...)
+		cmdArgs := []string{"-worker"}
+		cmd := exec.Command(exe, append(cmdArgs, os.Args[1:]...)...)
 		cmd.Dir, _ = os.Getwd()
 		cmd.Env = os.Environ()
 		cmd.Stdout = os.Stdout
@@ -91,6 +91,10 @@ func ChildMain() {
 
 	fmt.Println(tag, "Client connected with IP", c.RemoteAddr().String())
 
+	// Enviar su id de cliente (ip:puerto)
+	clientId := c.RemoteAddr().String() + "\n"
+	c.Write([]byte(clientId))
+
 	for {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
@@ -108,7 +112,6 @@ func ChildMain() {
 		switch action {
 		case utils.STOP:
 			fmt.Println(tag, "Client", c.RemoteAddr().String(), "disconnected")
-			clientCount--
 			return
 		case utils.INCREMENT:
 			num := utils.StringToInt(arr[1])
@@ -119,7 +122,7 @@ func ChildMain() {
 		case utils.RESTART:
 			count.Produce(action, "TCP Process Server", 0)
 		case utils.GET_COUNT:
-			count.Produce(action, "TCP Process Server"+c.RemoteAddr().String(), 0)
+			count.Produce(action, "TCP Process Server"+clientId, 0)
 		}
 	}
 }

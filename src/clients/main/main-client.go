@@ -77,17 +77,17 @@ func Start() {
 			in_main_prompt = false
 		case TCP_THREAD_CLI:
 			tcp_client, err = tcpClient.InitTCPClientConnection(ServerIP)
-			queueName = "responses-" + "TCP Thread Server" + tcp_client.LocalAddr().String()
+			queueName = "responses-" + "TCP Thread Server"
 			queue = tcpClient.ProcessTCPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		case TCP_PROCESS_CLI:
 			tcp_client, err = tcpClient.InitTCPProcessClientConnection(ServerIP)
-			queueName = "responses-" + "TCP Process Server" + tcp_client.LocalAddr().String()
+			queueName = "responses-" + "TCP Process Server"
 			queue = tcpClient.ProcessTCPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		case UDP_CLI:
 			udp_client, err = udpClient.InitUDPClientConnection(ServerIP)
-			queueName = "responses-" + "UDP Server" + udp_client.LocalAddr().String()
+			queueName = "responses-" + "UDP Server"
 			udpQueue = udpClient.ProcessUDPResponses(queueName, ServerIP)
 			in_operation_prompt = true
 		default:

@@ -158,7 +158,7 @@ func ProduceResponse(source string) {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("abriendo cola", "responses-"+source)
 	queue, err := connection.OpenQueue("responses-" + source)
 	if err != nil {
 		panic(err)

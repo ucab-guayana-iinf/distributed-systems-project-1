@@ -16,9 +16,14 @@ var tag = "[TCP Thread Server]:"
 
 const PORT = ":2020"
 
-func handleConnection(c net.Conn) {
+func handleConnection(c net.Conn, currClient string) {
 	defer c.Close()
-	fmt.Println(tag, " Client connected with IP", c.RemoteAddr().String())
+	fmt.Println(tag, "Client connected with IP", c.RemoteAddr().String())
+
+	// Enviar su numero de cliente
+	clientId := c.RemoteAddr().String() + "\n"
+	c.Write([]byte(clientId))
+
 	for {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
@@ -36,8 +41,7 @@ func handleConnection(c net.Conn) {
 		switch action {
 		case utils.STOP:
 			fmt.Println(tag, " Client", c.RemoteAddr().String(), "disconnected")
-			clientCount--
-			break
+			return
 		case utils.INCREMENT:
 			num := utils.StringToInt(arr[1])
 			count.Produce(action, "TCP Thread Server", num)
@@ -72,7 +76,7 @@ func Start() {
 			return
 		}
 		// Serve each client with a goroutine
-		go handleConnection(c)
 		clientCount++
+		go handleConnection(c, utils.IntToString(clientCount))
 	}
 }
