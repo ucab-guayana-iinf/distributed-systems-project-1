@@ -3,6 +3,7 @@ package tcpThread
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 
@@ -18,7 +19,7 @@ const PORT = ":2020"
 
 func handleConnection(c net.Conn, currClient string) {
 	defer c.Close()
-	fmt.Println(tag, "Client connected with IP", c.RemoteAddr().String())
+	log.Println(tag, "Client connected with IP", c.RemoteAddr().String())
 
 	// Enviar su numero de cliente
 	clientId := c.RemoteAddr().String() + "\n"
@@ -28,7 +29,7 @@ func handleConnection(c net.Conn, currClient string) {
 		// Get messages from clients
 		netData, err := bufio.NewReader(c).ReadString('\n')
 		if err != nil {
-			fmt.Println(tag, "Error leyendo el input de la conexion:", err)
+			log.Println(tag, "Error leyendo el input de la conexion:", err)
 			return
 		}
 
@@ -40,7 +41,7 @@ func handleConnection(c net.Conn, currClient string) {
 
 		switch action {
 		case utils.STOP:
-			fmt.Println(tag, " Client", c.RemoteAddr().String(), "disconnected")
+			log.Println(tag, " Client", c.RemoteAddr().String(), "disconnected")
 			return
 		case utils.INCREMENT:
 			num := utils.StringToInt(arr[1])
