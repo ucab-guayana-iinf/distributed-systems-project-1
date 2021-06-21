@@ -27,7 +27,8 @@ vía un semáforo, la cuenta en memoria compartida.
 
 ## Configuración
 
-TODO: documentar software requerido para correr el proyecto
+Tener un entorno de Go configurado apropiadamente
+Es requerido tener instalado Redis localmente corriendo en el puerto 6379
 
 ## Comandos
 
@@ -38,8 +39,8 @@ TODO: documentar software requerido para correr el proyecto
 - Correr la aplicación principal 
   - `go install proyecto1`
   - Correr los servidores y consola local: `go run main.go --server`
-  - Correr consolas: `go run main.go`
-
+  - Correr consolas con server local: `go run main.go`
+  - Correr consolas con server remoto: `go run main.go --ip xxx.xxx.x.x`
 ## Integrantes 
 
 - Juan Vera  CI 27375479
