@@ -1,7 +1,5 @@
 # Proyecto #1 Sistemas Distribuidos
 
-## TODO
-
 - Servicio de Cuentas
 Servicio de Cuentas, mantiene las cuenta y los diferentes servidores se
 comunican con él vía una cola de mensajes y el accede, vía un semáforo,
@@ -27,8 +25,7 @@ vía un semáforo, la cuenta en memoria compartida.
 
 ## Configuración
 
-Tener un entorno de Go configurado apropiadamente
-Es requerido tener instalado Redis localmente corriendo en el puerto 6379
+Tener un entorno de Go configurado apropiadamente y tener instalado Redis localmente escuchando en el puerto 6379
 
 ## Comandos
 
